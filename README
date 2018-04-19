@@ -1,0 +1,9 @@
+Properties->C/C++ Build->Settings
+Under MCU GCC Compiler->Includes add the include directory of each winc project folder
+Also include driver/source as it has a .h file within
+
+Properties->C/C++ General->Paths and Symbols
+Under Source Location click Add Folder..
+Select each winc project folder that has already been copied to the stm project directory
+
+At first the build wouldn't locate certain includes, but eventually it magically resolved itself
