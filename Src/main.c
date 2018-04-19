@@ -37,11 +37,13 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
+#include <string.h>
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include "nm_bsp.h"
 #include "m2m_wifi.h"
 
+//#include "nmspi.h"
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi3;
 
@@ -55,7 +57,7 @@ static void MX_SPI3_Init(void);
 int main(void)
 {
 	/* MCU Configuration----------------------------------------------------------*/
-
+//	nm_spi_init();
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
 
@@ -66,23 +68,52 @@ int main(void)
 	Init_Stm_Led();
 
 	tstrWifiInitParam param;
+	tstrM2MAPConfig strM2MAPConfig;
 	int8_t ret;
 
 	nm_bsp_init();
 
 	/* Initialize Wi-Fi parameters structure. */
-	m2m_memset((uint8_t *)&param, 0, sizeof(tstrWifiInitParam));
+	memset((uint8_t *)&param, 0, sizeof(tstrWifiInitParam));
 
 	/* Initialize Wi-Fi driver with data and status callbacks. */
 	ret = m2m_wifi_init(&param);
 	if (M2M_SUCCESS != ret)
 		Error_Handler();
 
+	/* Initialize AP mode parameters structure with SSID, channel and OPEN security type. */
+	memset(&strM2MAPConfig, 0x00, sizeof(tstrM2MAPConfig));
+	strcpy((char *)&strM2MAPConfig.au8SSID, MAIN_WLAN_SSID);
+	strM2MAPConfig.u8ListenChannel = MAIN_WLAN_CHANNEL;
+	strM2MAPConfig.u8SecType = MAIN_WLAN_AUTH;
+
+	strM2MAPConfig.au8DHCPServerIP[0] = 192;
+	strM2MAPConfig.au8DHCPServerIP[1] = 168;
+	strM2MAPConfig.au8DHCPServerIP[2] = 1;
+	strM2MAPConfig.au8DHCPServerIP[3] = 1;
+
+#if USE_WEP
+	strcpy((char *)&strM2MAPConfig.au8WepKey, MAIN_WLAN_WEP_KEY);
+	strM2MAPConfig.u8KeySz = strlen(MAIN_WLAN_WEP_KEY);
+	strM2MAPConfig.u8KeyIndx = MAIN_WLAN_WEP_KEY_INDEX;
+#endif
+
+	/* Bring up AP mode with parameters structure. */
+	ret = m2m_wifi_enable_ap(&strM2MAPConfig);
+	if (M2M_SUCCESS != ret)
+		Error_Handler();
+
+//	printf("AP mode started. You can connect to %s.\r\n", (char *)MAIN_WLAN_SSID);
+
 	/* Infinite loop */
 	while (1)
 	{
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-		HAL_Delay(1000);
+		/* Handle pending events from network controller. */
+		while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS) {
+		}
+
+//		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+//		HAL_Delay(1000);
 	}
 }
 

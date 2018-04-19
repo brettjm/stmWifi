@@ -202,7 +202,7 @@ void nm_bsp_register_isr(tpfNmBspIsr pfIsr)
 
    /*
     * Handler for pins connected to line 10 to 15
-    * We are using pin c13 so that's line 13
+    * We are using pin a10 so that's line 10
     * Irq: EXTI15_10_IRQn
     * Handler: EXTI15_10_IRQHandler
     */

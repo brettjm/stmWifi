@@ -252,10 +252,10 @@ sint8 nm_drv_init_download_mode()
 		chip_reset_and_cpu_halt();
 	}
 
-//#ifdef CONF_WINC_USE_SPI
+#ifdef CONF_WINC_USE_SPI
 	/* Must do this after global reset to set SPI data packet size. */
 	nm_spi_init();
-//#endif
+#endif
 
 	M2M_INFO("Chip ID %lx\n", nmi_get_chipid());
 
@@ -316,10 +316,10 @@ sint8 nm_drv_init(void * arg)
 	}
 #endif
 	M2M_INFO("Chip ID %lx\n", nmi_get_chipid());
-//#ifdef CONF_WINC_USE_SPI
+#ifdef CONF_WINC_USE_SPI
 	/* Must do this after global reset to set SPI data packet size. */
 	nm_spi_init();
-//#endif
+#endif
 	ret = wait_for_bootrom(u8Mode);
 	if (M2M_SUCCESS != ret) {
 		goto ERR2;
@@ -377,10 +377,10 @@ sint8 nm_drv_deinit(void * arg)
 		M2M_ERR("[nmi stop]: fail init bus\n");
 		goto ERR1;
 	}
-//#ifdef CONF_WINC_USE_SPI
+#ifdef CONF_WINC_USE_SPI
 	/* Must do this after global reset to set SPI data packet size. */
 	nm_spi_deinit();
-//#endif
+#endif
 
 ERR1:
 	return ret;
