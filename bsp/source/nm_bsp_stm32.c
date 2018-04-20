@@ -181,12 +181,14 @@ void nm_bsp_sleep(uint32 u32TimeMsec)
    than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
    To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
    */
- 
+	HAL_Delay(u32TimeMsec);
+
+
    // SysTick Timer is configured by default to generate an interrupt each 1 msec.
    // The configuration is done using HAL_SYSTICK_Config() located in HAL_Init().
-   while (u32TimeMsec--) {
-      HAL_Delay(1);
-   }
+//   while (u32TimeMsec--) {
+//      HAL_Delay(1);
+//   }
 }
 
 /*

@@ -43,8 +43,7 @@
 #define _NM_BSP_STM32_H_
 
 #define NM_DEBUG			0
-#define NM_BSP_PRINTF
-#define CONF_WINC_USE_SPI	(1)
+//#define NM_BSP_PRINTF
 #define NM_EDGE_INTERRUPT	1
 
 /* SPI chip select: pull down when transmitting to/from the ATWINC.

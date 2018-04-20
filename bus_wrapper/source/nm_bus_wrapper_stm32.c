@@ -150,7 +150,7 @@ sint8 nm_bus_init(void *pvinit)
 
 	/* Configure the SPI peripheral */
 	SpiHandle.Instance               = SPI3;
-	SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;  // try _256
+	SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;  // try _256
 	SpiHandle.Init.Direction         = SPI_DIRECTION_2LINES;
 	SpiHandle.Init.CLKPhase          = SPI_PHASE_1EDGE;
 	SpiHandle.Init.CLKPolarity       = SPI_POLARITY_LOW;

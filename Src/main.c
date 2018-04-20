@@ -43,7 +43,6 @@
 #include "nm_bsp.h"
 #include "m2m_wifi.h"
 
-//#include "nmspi.h"
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi3;
 
@@ -57,7 +56,7 @@ static void MX_SPI3_Init(void);
 int main(void)
 {
 	/* MCU Configuration----------------------------------------------------------*/
-//	nm_spi_init();
+
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
 
@@ -108,12 +107,12 @@ int main(void)
 	/* Infinite loop */
 	while (1)
 	{
-		/* Handle pending events from network controller. */
-		while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS) {
-		}
+//		/* Handle pending events from network controller. */
+//		while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS) {
+//		}
 
-//		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-//		HAL_Delay(1000);
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+		HAL_Delay(1000);
 	}
 }
 

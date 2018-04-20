@@ -47,9 +47,9 @@
 #include "m2m_types.h"
 #include "spi_flash.h"
 
-//#ifdef CONF_WINC_USE_SPI
+#ifdef CONF_WINC_USE_SPI
 #include "nmspi.h"
-//#endif
+#endif
 
 /**
 *	@fn		nm_get_firmware_info(tstrM2mRev* M2mRev)

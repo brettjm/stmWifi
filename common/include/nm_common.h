@@ -45,6 +45,8 @@
 #include "nm_bsp.h"
 #include "nm_debug.h"
 
+#define CONF_WINC_USE_SPI	(1)
+
 /**@defgroup  CommonDefines CommonDefines
  * @ingroup WlanDefines
  */

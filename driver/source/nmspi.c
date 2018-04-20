@@ -40,7 +40,7 @@
  */
 #include "nm_common.h"
 
-#ifdef CONF_WINC_USE_SPI
+//#ifdef CONF_WINC_USE_SPI
 
 #define USE_OLD_SPI_SW
 
@@ -1387,4 +1387,4 @@ sint8 nm_spi_write_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
 	return s8Ret;
 }
 
-#endif
+//#endif
