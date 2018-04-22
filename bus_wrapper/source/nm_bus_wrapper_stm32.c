@@ -70,27 +70,29 @@ tstrNmBusCapabilities egstrNmBusCapabilities =
 /* transfer state */
 __IO uint32_t wTransferState = TRANSFER_WAIT;
 
-/**
- * @brief  This function is executed in case of error occurrence.
- * @param  None
- * @retval None
- */
-static void Timeout_Error_Handler(void)
-{
-	/* -3- Toggle IO in an infinite loop */
-	while (1)
-	{
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-
-		/* Insert delay 100 ms */
-		HAL_Delay(50);
-	}
-}
+///**
+// * @brief  This function is executed in case of error occurrence.
+// * @param  None
+// * @retval None
+// */
+//static void Timeout_Error_Handler(void)
+//{
+//	/* -3- Toggle IO in an infinite loop */
+//	while (1)
+//	{
+//		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+//
+//		/* Insert delay 100 ms */
+//		HAL_Delay(50);
+//	}
+//}
 
 static sint8 spi_rw(uint8* pu8Mosi, uint8* pu8Miso, uint16 u16Sz)
 {
 	uint8 u8Dummy = 0;
 	uint8 u8SkipMosi = 0, u8SkipMiso = 0;
+	uint8_t txd_data = 0;
+	uint8_t rxd_data = 0;
 
 	if(((pu8Miso == NULL) && (pu8Mosi == NULL)) ||(u16Sz == 0)) {
 		return M2M_ERR_INVALID_ARG;
@@ -110,21 +112,25 @@ static sint8 spi_rw(uint8* pu8Mosi, uint8* pu8Miso, uint16 u16Sz)
 
 	while (u16Sz)
 	{
-		switch(HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)pu8Mosi, (uint8_t *)pu8Miso, u16Sz, 5000))
-		{
-		case HAL_TIMEOUT:
-			/* A Timeout Occurred */
-			/* Call Timeout Handler */
-			Timeout_Error_Handler();
-			break;
-			/* An Error Occurred */
-		case HAL_ERROR:
-			/* Call Timeout Handler */
-			Error_Handler();
-			break;
-		default:
-			break;
-		}
+		txd_data = *pu8Mosi;
+		HAL_SPI_TransmitReceive(&SpiHandle, &txd_data, &rxd_data, 1, 1000);
+		*pu8Miso = rxd_data;
+
+//		switch(HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)pu8Mosi, (uint8_t *)pu8Miso, u16Sz, 5000))
+//		{
+//		case HAL_TIMEOUT:
+//			/* A Timeout Occurred */
+//			/* Call Timeout Handler */
+//			Timeout_Error_Handler();
+//			break;
+//			/* An Error Occurred */
+//		case HAL_ERROR:
+//			/* Call Timeout Handler */
+//			Error_Handler();
+//			break;
+//		default:
+//			break;
+//		}
 
 		u16Sz--;
 		if (!u8SkipMiso)
@@ -150,7 +156,7 @@ sint8 nm_bus_init(void *pvinit)
 
 	/* Configure the SPI peripheral */
 	SpiHandle.Instance               = SPI3;
-	SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;  // try _256
+	SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;  // try _256
 	SpiHandle.Init.Direction         = SPI_DIRECTION_2LINES;
 	SpiHandle.Init.CLKPhase          = SPI_PHASE_1EDGE;
 	SpiHandle.Init.CLKPolarity       = SPI_POLARITY_LOW;
@@ -163,25 +169,22 @@ sint8 nm_bus_init(void *pvinit)
 	SpiHandle.Init.Mode              = SPI_MODE_MASTER;
 
 	if(HAL_SPI_Init(&SpiHandle) != HAL_OK)
-	{
-		/* Initialization Error */
-		Error_Handler();
-	}
+		Error_Handler();  /* Initialization Error */
 
 	/* Enable GPIO Clock (to be able to program the configuration registers) */
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-
-	/* Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOA, WINC_SPI_CS_PIN, GPIO_PIN_SET);
 
 	// Configure CS pin as output
 	GPIO_InitCS.Pin   = WINC_SPI_CS_PIN;
 	GPIO_InitCS.Mode  = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitCS.Pull  = GPIO_NOPULL;
-	GPIO_InitCS.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitCS.Speed = GPIO_SPEED_LOW;
 
 	/* Set SPI CS pin. */
 	HAL_GPIO_Init(GPIOA, &GPIO_InitCS);
+
+	/* Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOA, WINC_SPI_CS_PIN, GPIO_PIN_SET);
 
 	/* Reset WINC1500. */
 	nm_bsp_reset();

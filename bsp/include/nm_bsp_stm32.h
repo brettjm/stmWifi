@@ -43,7 +43,7 @@
 #define _NM_BSP_STM32_H_
 
 #define NM_DEBUG			0
-//#define NM_BSP_PRINTF
+#define NM_BSP_PRINTF
 #define NM_EDGE_INTERRUPT	1
 
 /* SPI chip select: pull down when transmitting to/from the ATWINC.
@@ -62,8 +62,11 @@
  */
 #define WINC_SPI_CS_PIN					GPIO_PIN_12  // Port A
 #define WINC_RESET_PIN  					GPIO_PIN_11  // Port A
-#define WINC_IRQ_PIN   					GPIO_PIN_10  // Port A
+#define WINC_IRQ_PIN   					GPIO_PIN_4  // Port A
 //#define WINC_CHIP_EN_PIN					GPIO_PIN_15  // Port A
 // Chip enable pin just asserted high
+
+// Routine to call isr function in m2m_hif
+void chip_isr(void);
 
 #endif /* _NM_BSP_STM32_H_ */

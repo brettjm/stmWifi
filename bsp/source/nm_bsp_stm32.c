@@ -65,18 +65,16 @@ static void init_chip_pins(void)
 
     /* Enable GPIO Clock (to be able to program the configuration registers) */
    __HAL_RCC_GPIOA_CLK_ENABLE();
-   __HAL_RCC_GPIOC_CLK_ENABLE();
-
-   /*Configure Reset pin Output Level */
-   HAL_GPIO_WritePin(GPIOA, WINC_RESET_PIN, GPIO_PIN_RESET);
 
    // Configure RESET pin as output
    GPIO_InitStruct.Pin   = WINC_RESET_PIN;
    GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
    GPIO_InitStruct.Pull  = GPIO_NOPULL;
-   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-
+   GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+   /*Configure Reset pin Output Level */
+   HAL_GPIO_WritePin(GPIOA, WINC_RESET_PIN, GPIO_PIN_RESET);
 
 //   // Configure CHIP_EN as pull-up
 //   GPIO_InitStruct.Pin   = WINC_CHIP_EN_PIN;
@@ -88,14 +86,9 @@ static void init_chip_pins(void)
    // Configure IRQ pin as input, pullup
    // GPIO mode is set to detect interrupts on falling edges
    GPIO_InitStruct.Pin  = WINC_IRQ_PIN;
-   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-   GPIO_InitStruct.Pull = GPIO_NOPULL;
+   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+   GPIO_InitStruct.Pull = GPIO_PULLUP;
    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-//   GPIO_InitStruct.Pin   = WINC_IRQ_PIN;
-//   GPIO_InitStruct.Mode  = GPIO_MODE_IT_FALLING;
-//   GPIO_InitStruct.Pull  = GPIO_NOPULL;
-//   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-//   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 }
 
 /*
@@ -200,18 +193,17 @@ void nm_bsp_sleep(uint32 u32TimeMsec)
  */
 void nm_bsp_register_isr(tpfNmBspIsr pfIsr)
 {
-   gpfIsr = pfIsr;
+   gpfIsr = pfIsr;  // Set pointer to isr routine
 
-   /*
-    * Handler for pins connected to line 10 to 15
+   /* Handler for pins connected to line 10 to 15
     * We are using pin a10 so that's line 10
     * Irq: EXTI15_10_IRQn
     * Handler: EXTI15_10_IRQHandler
     */
 
    /* EXTI interrupt init*/
-   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+   HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
+   HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 }
 
 /*
@@ -222,9 +214,8 @@ void nm_bsp_register_isr(tpfNmBspIsr pfIsr)
  */
 void nm_bsp_interrupt_ctrl(uint8 u8Enable)
 {
-   if (u8Enable) {
-	   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-   } else {
-	   HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
-   }
+   if (u8Enable)
+	   HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+   else
+	   HAL_NVIC_DisableIRQ(EXTI4_IRQn);
 }
