@@ -46,6 +46,7 @@
 #include "nmasic.h"
 #include "m2m_types.h"
 #include "spi_flash.h"
+#include "main.h"
 
 #ifdef CONF_WINC_USE_SPI
 #include "nmspi.h"
@@ -318,7 +319,8 @@ sint8 nm_drv_init(void * arg)
 	M2M_INFO("Chip ID %lx\n", nmi_get_chipid());
 #ifdef CONF_WINC_USE_SPI
 	/* Must do this after global reset to set SPI data packet size. */
-	nm_spi_init();
+	if (M2M_SUCCESS != nm_spi_init())
+		Error_Handler();
 #endif
 	ret = wait_for_bootrom(u8Mode);
 	if (M2M_SUCCESS != ret) {

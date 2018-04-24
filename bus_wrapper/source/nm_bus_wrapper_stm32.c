@@ -113,24 +113,23 @@ static sint8 spi_rw(uint8* pu8Mosi, uint8* pu8Miso, uint16 u16Sz)
 	while (u16Sz)
 	{
 		txd_data = *pu8Mosi;
-		HAL_SPI_TransmitReceive(&SpiHandle, &txd_data, &rxd_data, 1, 1000);
-		*pu8Miso = rxd_data;
 
-//		switch(HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)pu8Mosi, (uint8_t *)pu8Miso, u16Sz, 5000))
-//		{
-//		case HAL_TIMEOUT:
-//			/* A Timeout Occurred */
-//			/* Call Timeout Handler */
-//			Timeout_Error_Handler();
-//			break;
-//			/* An Error Occurred */
-//		case HAL_ERROR:
-//			/* Call Timeout Handler */
-//			Error_Handler();
-//			break;
-//		default:
-//			break;
-//		}
+		switch(HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)pu8Mosi, (uint8_t *)pu8Miso, u16Sz, 5000))
+		{
+		case HAL_TIMEOUT:
+			/* A Timeout Occurred */
+			Error_Handler();
+			break;
+			/* An Error Occurred */
+		case HAL_ERROR:
+			/* Call Timeout Handler */
+			Error_Handler();
+			break;
+		default:
+			break;
+		}
+
+		*pu8Miso = rxd_data;
 
 		u16Sz--;
 		if (!u8SkipMiso)

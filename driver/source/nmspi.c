@@ -1222,9 +1222,9 @@ sint8 nm_spi_init(void)
 		gu8Crc_off = 1;
 		M2M_ERR("[nmi spi]: Failed internal read protocol with CRC on, retyring with CRC off...\n");
 		if (!spi_read_reg(NMI_SPI_PROTOCOL_CONFIG, &reg)){
-			// Reaad failed with both CRC on and off, something went bad
+			// Read failed with both CRC on and off, something went bad
 			M2M_ERR( "[nmi spi]: Failed internal read protocol...\n");
-			return 0;
+			return M2M_ERR_BUS_FAIL;
 		}
 	}
 	if(gu8Crc_off == 0)
